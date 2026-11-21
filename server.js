@@ -598,6 +598,27 @@ app.post("/api/media/video-compress", mediaUpload.single("file"), async (req, re
 // PÁGINA PRINCIPAL
 // ==========================================
 
+
+// ==========================================
+// GOOGLE: ROBOTS Y SITEMAP
+// ==========================================
+
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain").send(
+    "User-agent: *\nAllow: /\n\nSitemap: https://nappix.onrender.com/sitemap.xml"
+  );
+});
+
+app.get("/sitemap.xml", (req, res) => {
+  res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://nappix.onrender.com/</loc>
+  </url>
+</urlset>`);
+});
+
+
 app.get("/", (req, res) => {
 res.send(`<!DOCTYPE html>
 <html lang="es">
