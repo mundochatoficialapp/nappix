@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // FORMATO DE TAMAÑOS
   function formatBytes(bytes) {
     if (bytes < 1024) return `${bytes} bytes`;
+
     if (bytes < 1024 * 1024) {
       return `${(bytes / 1024).toFixed(1)} KB`;
     }
@@ -59,32 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // SELECCIÓN DE ARCHIVOS
   const fileInputs = [
-    {
-      input: 'convertFile',
-      output: 'convertFileName',
-      type: 'image'
-    },
-    {
-      input: 'compressFile',
-      output: 'compressFileName',
-      type: 'image'
-    },
-    {
-      input: 'resizeFile',
-      output: 'resizeFileName',
-      type: 'image'
-    },
-    {
-      input: 'mergeFiles',
-      output: 'mergeFileName',
-      type: 'pdf',
-      multiple: true
-    },
-    {
-      input: 'splitFile',
-      output: 'splitFileName',
-      type: 'pdf'
-    }
+    { input: 'convertFile', output: 'convertFileName', type: 'image' },
+    { input: 'compressFile', output: 'compressFileName', type: 'image' },
+    { input: 'resizeFile', output: 'resizeFileName', type: 'image' },
+    { input: 'pdfWordFile', output: 'pdfWordFileName', type: 'pdf' },
+    { input: 'mergeFiles', output: 'mergeFileName', type: 'pdf', multiple: true },
+    { input: 'splitFile', output: 'splitFileName', type: 'pdf' }
   ];
 
   fileInputs.forEach(config => {
@@ -189,6 +170,12 @@ document.addEventListener('DOMContentLoaded', () => {
       success: '¡Imagen redimensionada correctamente!'
     },
     {
+      id: 'pdfWordForm',
+      message: 'pdfWordMessage',
+      fallback: 'nappix-convertido.docx',
+      success: '¡Tu documento Word está listo para descargar!'
+    },
+    {
       id: 'mergeForm',
       message: 'mergeMessage',
       fallback: 'nappix-pdf-unido.pdf',
@@ -241,9 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             const errorData = await response.json();
             errorMessage = errorData.error || errorMessage;
-          } catch (_) {
-            // Conserva el mensaje predeterminado.
-          }
+          } catch (_) {}
 
           throw new Error(errorMessage);
         }
