@@ -18,6 +18,7 @@
     <nav id="mainNav">
       <a href="#inicio">Inicio</a>
       <a href="#imagenes">Imágenes</a>
+      <a href="#pdf">PDF y Word</a>
       <a href="#herramientas">Herramientas</a>
       <a href="#nosotros">Nosotros</a>
     </nav>
@@ -135,17 +136,43 @@
     <div class="section-heading">
       <span class="eyebrow">HERRAMIENTAS DE DOCUMENTOS</span>
       <h2>Trabaja tus archivos PDF</h2>
-      <p>Organiza y administra tus documentos fácilmente.</p>
+      <p>Convierte, organiza y administra tus documentos fácilmente.</p>
     </div>
 
     <div class="tool-layout">
       <aside class="tool-menu">
+        <button class="tool-tab active" data-tool="pdfword">📝 PDF a Word</button>
         <button class="tool-tab" data-tool="merge">📚 Unir PDF</button>
         <button class="tool-tab" data-tool="split">✂️ Dividir PDF</button>
       </aside>
 
       <div class="tool-panel">
 
+        <!-- PDF A WORD -->
+        <div class="tool-content active" id="panel-pdfword">
+          <h3>Convertir PDF a Word</h3>
+          <p>Transforma el texto de tu documento PDF en un archivo Word editable.</p>
+
+          <form id="pdfWordForm" data-endpoint="/api/pdf/to-word">
+            <label class="upload-area" for="pdfWordFile">
+              <span class="upload-icon">📝</span>
+              <strong>Selecciona tu archivo PDF</strong>
+              <span>PDF · Máximo 25 MB</span>
+            </label>
+
+            <input type="file" id="pdfWordFile" name="file" accept="application/pdf" required>
+
+            <p class="file-name" id="pdfWordFileName">Ningún archivo seleccionado</p>
+
+            <button class="primary-button action-button" type="submit">Convertir a Word</button>
+
+            <p class="form-message" id="pdfWordMessage" aria-live="polite"></p>
+
+            <p class="hero-note">Nota: los PDF escaneados o compuestos solo por imágenes necesitan reconocimiento de texto (OCR).</p>
+          </form>
+        </div>
+
+        <!-- UNIR PDF -->
         <div class="tool-content" id="panel-merge">
           <h3>Unir archivos PDF</h3>
           <p>Combina varios documentos en un solo archivo PDF.</p>
@@ -166,6 +193,7 @@
           </form>
         </div>
 
+        <!-- DIVIDIR PDF -->
         <div class="tool-content" id="panel-split">
           <h3>Dividir archivo PDF</h3>
           <p>Extrae las páginas que necesitas de un documento.</p>
@@ -223,7 +251,7 @@
       <article class="category-card">
         <div class="category-icon">📄</div>
         <h3>PDF y Word</h3>
-        <p>Une y divide documentos PDF.</p>
+        <p>Convierte PDF a Word, une y divide documentos.</p>
         <a href="#pdf">Explorar herramientas →</a>
       </article>
 
