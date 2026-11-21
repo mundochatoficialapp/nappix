@@ -604,6 +604,7 @@ res.send(`<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="e76-GL-WwZdNeNp3KjC-Q9IgxNVP_lvLdqhBBVgR1Pw">
 <meta name="theme-color" content="#6428d9">
 <meta name="description" content="ÑAPPIX: herramientas digitales gratuitas para convertir, comprimir y organizar archivos.">
 <title>ÑAPPIX - Herramientas digitales</title>
