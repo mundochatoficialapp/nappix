@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 3000;
 app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: "2mb" }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public"), { index: false }));
 
 app.use("/api", rateLimit({
   windowMs: 15 * 60 * 1000,
