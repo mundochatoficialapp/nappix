@@ -1,223 +1,163 @@
 
 const express = require('express');
+const http = require('http');
+const path = require('path');
 const multer = require('multer');
 const sharp = require('sharp');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const path = require('path');
+const { PDFDocument } = require('pdf-lib');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+app.set('trust proxy', true);
 
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false
 }));
 
 app.use(express.json({ limit: '1mb' }));
 
-app.use('/api/', rateLimit({
+const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 30,
-  standardHeaders: 'draft-8',
+  limit: 60,
+  standardHeaders: 'draft-7',
   legacyHeaders: false
-}));
+});
 
-// ==========================================
-// CONFIGURACIÓN DE ARCHIVOS
-// ==========================================
+app.use('/api/', limiter);
 
-const upload = multer({
-  storage: multer.memoryStorage(),
+const storage = multer.memoryStorage();
+
+const imageUpload = multer({
+  storage,
   limits: {
     fileSize: 15 * 1024 * 1024,
     files: 1
   },
   fileFilter: (req, file, cb) => {
-    const allowed = [
-      'image/jpeg',
-      'image/png',
-      'image/webp'
-    ];
-
-    if (allowed.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Formato no permitido. Usa JPG, PNG o WEBP.'));
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.mimetype)) {
+      return cb(new Error('Formato de imagen no permitido.'));
     }
+    cb(null, true);
   }
 });
 
-const formats = {
-  jpg: { format: 'jpeg', mime: 'image/jpeg', extension: 'jpg' },
-  jpeg: { format: 'jpeg', mime: 'image/jpeg', extension: 'jpg' },
-  png: { format: 'png', mime: 'image/png', extension: 'png' },
-  webp: { format: 'webp', mime: 'image/webp', extension: 'webp' }
-};
+const pdfUpload = multer({
+  storage,
+  limits: {
+    fileSize: 25 * 1024 * 1024,
+    files: 10
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== 'application/pdf') {
+      return cb(new Error('Solo se permiten archivos PDF.'));
+    }
+    cb(null, true);
+  }
+});
 
-function safeName(filename) {
-  return path.parse(filename)
-    .name
-    .replace(/[^a-zA-Z0-9_-]/g, '_')
-    .slice(0, 80) || 'imagen';
-}
-
-function sendImage(res, buffer, mime, filename) {
-  res.setHeader('Content-Type', mime);
+function sendImage(res, buffer, filename, contentType) {
+  res.setHeader('Content-Type', contentType);
   res.setHeader(
     'Content-Disposition',
     `attachment; filename="${filename}"`
   );
-  res.setHeader('Cache-Control', 'no-store');
   res.send(buffer);
 }
 
-function createImage(buffer) {
-  return sharp(buffer, {
-    limitInputPixels: 40000000
-  }).rotate();
+function sendPdf(res, buffer, filename) {
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${filename}"`
+  );
+  res.send(Buffer.from(buffer));
 }
 
-// ==========================================
-// ESTADO DEL SERVIDOR
-// ==========================================
-
+// Estado del servidor
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    project: 'ÑAPPIX',
-    message: 'Servidor funcionando correctamente',
-    tools: [
-      'convert-image',
-      'compress-image',
-      'resize-image'
-    ]
+    app: 'ÑAPPIX',
+    tools: ['convert', 'compress', 'resize', 'merge-pdf', 'split-pdf']
   });
 });
 
-// ==========================================
 // CONVERTIR IMÁGENES
-// ==========================================
-
-app.post('/api/convert/image', upload.single('file'), async (req, res) => {
+app.post('/api/convert/image', imageUpload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        error: 'Selecciona una imagen.'
-      });
+      return res.status(400).json({ error: 'Selecciona una imagen.' });
     }
 
-    const format = String(req.body.format || '').toLowerCase();
-    const selected = formats[format];
+    const format = String(req.body.format || 'png').toLowerCase();
+    const formats = ['png', 'jpeg', 'webp'];
 
-    if (!selected) {
-      return res.status(400).json({
-        error: 'Formato de salida no válido.'
-      });
+    if (!formats.includes(format)) {
+      return res.status(400).json({ error: 'Formato no válido.' });
     }
 
-    const image = createImage(req.file.buffer);
+    const output = await sharp(req.file.buffer)
+      .toFormat(format)
+      .toBuffer();
 
-    let converted;
-
-    if (selected.format === 'jpeg') {
-      converted = await image.jpeg({ quality: 85 }).toBuffer();
-    } else if (selected.format === 'png') {
-      converted = await image.png().toBuffer();
-    } else {
-      converted = await image.webp({ quality: 85 }).toBuffer();
-    }
-
-    const filename = safeName(req.file.originalname);
+    const extension = format === 'jpeg' ? 'jpg' : format;
 
     sendImage(
       res,
-      converted,
-      selected.mime,
-      `${filename}.${selected.extension}`
+      output,
+      `nappix-convertida.${extension}`,
+      `image/${format}`
     );
-
   } catch (error) {
-    console.error('Error convirtiendo imagen:', error.message);
-
-    res.status(400).json({
-      error: 'No pudimos convertir esta imagen. Intenta con otro archivo.'
-    });
+    next(error);
   }
 });
 
-// ==========================================
 // COMPRIMIR IMÁGENES
-// ==========================================
-
-app.post('/api/compress/image', upload.single('file'), async (req, res) => {
+app.post('/api/compress/image', imageUpload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        error: 'Selecciona una imagen.'
-      });
+      return res.status(400).json({ error: 'Selecciona una imagen.' });
     }
 
-    const quality = Math.min(
-      95,
-      Math.max(20, Number(req.body.quality) || 70)
+    const quality = Math.max(
+      20,
+      Math.min(100, Number(req.body.quality) || 75)
     );
 
-    const mime = req.file.mimetype;
-    const image = createImage(req.file.buffer);
+    const metadata = await sharp(req.file.buffer).metadata();
+    let pipeline = sharp(req.file.buffer);
 
-    let compressed;
-    let extension;
-
-    if (mime === 'image/jpeg') {
-      compressed = await image.jpeg({
-        quality,
-        mozjpeg: true
-      }).toBuffer();
-      extension = 'jpg';
-
-    } else if (mime === 'image/png') {
-      compressed = await image.png({
-        compressionLevel: 9,
-        palette: true,
-        quality
-      }).toBuffer();
-      extension = 'png';
-
+    if (metadata.format === 'jpeg') {
+      pipeline = pipeline.jpeg({ quality, mozjpeg: true });
+    } else if (metadata.format === 'png') {
+      pipeline = pipeline.png({ compressionLevel: 9, palette: true });
     } else {
-      compressed = await image.webp({
-        quality
-      }).toBuffer();
-      extension = 'webp';
+      pipeline = pipeline.webp({ quality });
     }
 
-    const filename = safeName(req.file.originalname);
+    const output = await pipeline.toBuffer();
 
     sendImage(
       res,
-      compressed,
-      mime,
-      `${filename}-comprimida.${extension}`
+      output,
+      `nappix-comprimida.${metadata.format === 'jpeg' ? 'jpg' : metadata.format}`,
+      `image/${metadata.format}`
     );
-
   } catch (error) {
-    console.error('Error comprimiendo imagen:', error.message);
-
-    res.status(400).json({
-      error: 'No pudimos comprimir esta imagen.'
-    });
+    next(error);
   }
 });
 
-// ==========================================
-// REDIMENSIONAR IMÁGENES
-// ==========================================
-
-app.post('/api/resize/image', upload.single('file'), async (req, res) => {
+// CAMBIAR TAMAÑO
+app.post('/api/resize/image', imageUpload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        error: 'Selecciona una imagen.'
-      });
+      return res.status(400).json({ error: 'Selecciona una imagen.' });
     }
 
     const width = Number(req.body.width);
@@ -232,84 +172,136 @@ app.post('/api/resize/image', upload.single('file'), async (req, res) => {
       height > 5000
     ) {
       return res.status(400).json({
-        error: 'Introduce un ancho y alto entre 1 y 5000 píxeles.'
+        error: 'Introduce un ancho y alto válidos, hasta 5000 píxeles.'
       });
     }
 
-    const mime = req.file.mimetype;
-    const image = createImage(req.file.buffer);
+    const output = await sharp(req.file.buffer)
+      .resize({
+        width,
+        height,
+        fit: 'inside',
+        withoutEnlargement: true
+      })
+      .toBuffer();
 
-    let resized = image.resize(width, height, {
-      fit: 'inside',
-      withoutEnlargement: true
-    });
-
-    let output;
-
-    if (mime === 'image/jpeg') {
-      output = await resized.jpeg({ quality: 85 }).toBuffer();
-    } else if (mime === 'image/png') {
-      output = await resized.png().toBuffer();
-    } else {
-      output = await resized.webp({ quality: 85 }).toBuffer();
-    }
-
-    const extension = mime === 'image/jpeg'
-      ? 'jpg'
-      : mime === 'image/png'
-        ? 'png'
-        : 'webp';
-
-    const filename = safeName(req.file.originalname);
+    const metadata = await sharp(output).metadata();
+    const format = metadata.format || 'jpeg';
 
     sendImage(
       res,
       output,
-      mime,
-      `${filename}-redimensionada.${extension}`
+      `nappix-redimensionada.${format === 'jpeg' ? 'jpg' : format}`,
+      `image/${format}`
     );
-
   } catch (error) {
-    console.error('Error redimensionando imagen:', error.message);
-
-    res.status(400).json({
-      error: 'No pudimos redimensionar esta imagen.'
-    });
+    next(error);
   }
 });
 
-// ==========================================
-// ARCHIVOS PÚBLICOS
-// ==========================================
+// UNIR PDF
+app.post('/api/pdf/merge', pdfUpload.array('files', 10), async (req, res, next) => {
+  try {
+    const files = req.files || [];
 
+    if (files.length < 2) {
+      return res.status(400).json({
+        error: 'Selecciona al menos dos archivos PDF.'
+      });
+    }
+
+    const mergedPdf = await PDFDocument.create();
+
+    for (const file of files) {
+      const sourcePdf = await PDFDocument.load(file.buffer);
+      const pages = await mergedPdf.copyPages(
+        sourcePdf,
+        sourcePdf.getPageIndices()
+      );
+
+      pages.forEach(page => mergedPdf.addPage(page));
+    }
+
+    const output = await mergedPdf.save();
+
+    sendPdf(res, output, 'nappix-pdf-unido.pdf');
+  } catch (error) {
+    next(error);
+  }
+});
+
+// DIVIDIR PDF
+app.post('/api/pdf/split', pdfUpload.single('file'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'Selecciona un archivo PDF.'
+      });
+    }
+
+    const sourcePdf = await PDFDocument.load(req.file.buffer);
+    const totalPages = sourcePdf.getPageCount();
+
+    const start = Number(req.body.start);
+    const end = Number(req.body.end);
+
+    if (
+      !Number.isInteger(start) ||
+      !Number.isInteger(end) ||
+      start < 1 ||
+      end < start ||
+      end > totalPages
+    ) {
+      return res.status(400).json({
+        error: `Introduce un rango válido entre 1 y ${totalPages}.`
+      });
+    }
+
+    const newPdf = await PDFDocument.create();
+
+    const pageIndices = Array.from(
+      { length: end - start + 1 },
+      (_, index) => start - 1 + index
+    );
+
+    const pages = await newPdf.copyPages(sourcePdf, pageIndices);
+
+    pages.forEach(page => newPdf.addPage(page));
+
+    const output = await newPdf.save();
+
+    sendPdf(res, output, 'nappix-pdf-dividido.pdf');
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Archivos públicos
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('*path', (req, res) => {
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ==========================================
-// MANEJO DE ERRORES
-// ==========================================
-
+// Manejo de errores
 app.use((error, req, res, next) => {
-  console.error(error.message);
+  console.error(error);
 
   if (error instanceof multer.MulterError) {
     return res.status(400).json({
-      error: 'El archivo supera el límite permitido de 15 MB.'
+      error: error.code === 'LIMIT_FILE_SIZE'
+        ? 'El archivo supera el límite permitido.'
+        : 'No se pudo procesar el archivo.'
     });
   }
 
   res.status(400).json({
-    error: error.message || 'Ha ocurrido un error.'
+    error: error.message || 'Ocurrió un error al procesar el archivo.'
   });
 });
 
-// ==========================================
-// INICIAR SERVIDOR
-// ==========================================
+const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`ÑAPPIX funcionando en el puerto ${PORT}`);
 });
