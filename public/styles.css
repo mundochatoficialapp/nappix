@@ -1091,3 +1091,294 @@ button, a {
     font-size: 38px;
   }
 }
+
+
+/* =====================================
+   COMPATIBILIDAD NUEVO DISEÑO ÑAPPIX
+===================================== */
+
+#mainNav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+#mainNav a {
+  color: #666276;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#mainNav a:hover {
+  color: var(--purple);
+}
+
+.hero-content {
+  width: min(850px, 100%);
+  margin: auto;
+}
+
+.hero .eyebrow {
+  display: inline-block;
+  padding: 9px 15px;
+  background: white;
+  border: 1px solid #eae4ff;
+  border-radius: 30px;
+}
+
+.hero-content > p {
+  max-width: 590px;
+  margin: 22px auto 25px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.hero-note {
+  display: block;
+}
+
+.tool-layout {
+  display: grid;
+  grid-template-columns: 245px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.tool-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tool-tab {
+  width: 100%;
+  padding: 17px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: white;
+  color: var(--ink);
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.tool-tab:hover,
+.tool-tab.active {
+  background: #f1edff;
+  color: var(--purple);
+  border-color: #d9ceff;
+}
+
+.tool-panel {
+  min-width: 0;
+  padding: 30px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  box-shadow: 0 15px 40px #3120600b;
+}
+
+.tool-content {
+  display: none;
+}
+
+.tool-content.active {
+  display: block;
+}
+
+.tool-content h3 {
+  font-size: 23px;
+  margin-bottom: 9px;
+}
+
+.tool-content > p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.tool-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-content .upload-area {
+  gap: 7px;
+  min-height: 170px;
+}
+
+.tool-content .upload-area span:not(.upload-icon) {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.tool-content input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-name {
+  margin: 10px 0 18px;
+  color: var(--purple);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.tool-content form > label:not(.upload-area),
+.dimensions label {
+  margin: 14px 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tool-content select,
+.tool-content input[type="number"] {
+  width: 100%;
+  min-height: 45px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: white;
+  color: var(--ink);
+  outline: none;
+}
+
+.tool-content select:focus,
+.tool-content input:focus {
+  border-color: var(--purple);
+}
+
+.tool-content .action-button {
+  width: 100%;
+  margin-top: 20px;
+  border: 0;
+  cursor: pointer;
+}
+
+.tool-content .action-button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.tool-content .form-message {
+  min-height: 20px;
+  line-height: 1.5;
+}
+
+.dimensions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.categories {
+  background: #faf9ff;
+}
+
+.category-card a {
+  display: inline-block;
+  margin-top: 17px;
+  color: var(--purple);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.about {
+  text-align: center;
+  background: white;
+}
+
+.about-content {
+  max-width: 720px;
+}
+
+.about-content h2 {
+  font-size: clamp(30px, 4vw, 43px);
+  letter-spacing: -1.8px;
+  margin-bottom: 17px;
+}
+
+.about-content p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.footer .container {
+  text-align: center;
+}
+
+.footer .logo {
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.footer p {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.footer small {
+  color: #9994a7;
+  font-size: 10px;
+}
+
+@media (max-width: 650px) {
+  #mainNav {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    padding: 20px 25px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 12px 20px #27174b0c;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  #mainNav.open {
+    display: flex;
+  }
+
+  .tool-layout {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .tool-menu {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .tool-tab {
+    padding: 14px;
+  }
+
+  .tool-panel {
+    padding: 19px;
+  }
+
+  .tool-content h3 {
+    font-size: 21px;
+  }
+
+  .hero-content > p {
+    font-size: 13px;
+  }
+
+  .dimensions {
+    gap: 10px;
+  }
+}
+
