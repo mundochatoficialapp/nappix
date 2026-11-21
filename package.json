@@ -1,7 +1,7 @@
 
 {
   "name": "nappix",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "ÑAPPIX - Plataforma de herramientas digitales",
   "main": "server.js",
   "scripts": {
@@ -12,17 +12,19 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.80",
+    "archiver": "^7.0.1",
+    "docx": "^9.5.1",
     "express": "^5.1.0",
-    "multer": "^2.0.2",
-    "sharp": "^0.34.3",
-    "helmet": "^8.1.0",
     "express-rate-limit": "^8.1.0",
+    "ffmpeg-static": "^5.2.0",
+    "helmet": "^8.1.0",
+    "multer": "^2.0.2",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "1.1.1",
-    "docx": "^9.5.1",
-    "ffmpeg-static": "^5.2.0",
+    "pdfjs-dist": "^5.4.394",
     "qrcode": "^1.5.4",
-    "archiver": "^7.0.1",
+    "sharp": "^0.34.3",
     "unzipper": "^0.12.3"
   }
 }
