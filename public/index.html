@@ -4,445 +4,177 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="ÑAPPIX: herramientas gratuitas para convertir, comprimir y transformar imágenes y documentos.">
-  <title>ÑAPPIX — Más herramientas. Más posibilidades.</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#6428d9">
+  <meta name="description" content="ÑAPPIX: herramientas digitales gratuitas para convertir, comprimir y redimensionar tus archivos fácilmente.">
+  <title>ÑAPPIX | Herramientas digitales</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
-
 <body>
 
 <header class="header">
   <div class="container nav">
-    <a class="logo" href="/">
-      <span class="logo-mark">Ñ</span><span>APPIX<span class="logo-dot">.</span></span>
-    </a>
-
-    <nav class="desktop-nav">
-      <a href="#herramientas">Herramientas</a>
+    <a href="#" class="logo">ÑAPPIX<span>.</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+    <nav id="mainNav">
+      <a href="#inicio">Inicio</a>
       <a href="#imagenes">Imágenes</a>
-      <a href="#documentos">Documentos</a>
+      <a href="#herramientas">Herramientas</a>
       <a href="#nosotros">Nosotros</a>
     </nav>
-
-    <a class="nav-button" href="#herramientas">Explorar herramientas ↗</a>
-    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
-  </div>
-
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#herramientas">Herramientas</a>
-    <a href="#imagenes">Imágenes</a>
-    <a href="#documentos">Documentos</a>
-    <a href="#nosotros">Nosotros</a>
   </div>
 </header>
 
 <main>
-
-<section class="hero">
-  <div class="hero-glow glow-one"></div>
-  <div class="hero-glow glow-two"></div>
-
+<section class="hero" id="inicio">
   <div class="container hero-content">
-    <div class="announcement">
-      <span class="pulse"></span>
-      TU ESPACIO DE HERRAMIENTAS DIGITALES
-    </div>
-
-    <h1>Todo lo que necesitas.<br><span>En un solo lugar.</span></h1>
-
-    <p class="hero-description">
-      Convierte, comprime y transforma tus archivos fácilmente.
-      Herramientas útiles, rápidas y sin complicaciones.
-    </p>
-
-    <a class="primary-button" href="#herramientas">
-      Descubrir herramientas →
-    </a>
-
-    <div class="hero-note">
-      <span>✓</span> Fácil de usar
-      <span>✓</span> Sin registro
-      <span>✓</span> Desde cualquier dispositivo
-    </div>
-
-    <div class="hero-visual">
-      <div class="floating-card floating-left">
-        <span class="file-icon purple">PDF</span>
-        <div><strong>Documentos</strong><small>Todo más sencillo</small></div>
-      </div>
-
-      <div class="visual-window">
-        <div class="window-top">
-          <span></span><span></span><span></span>
-          <small>nappix.com</small>
-        </div>
-        <div class="window-body">
-          <div class="visual-symbol">Ñ</div>
-          <strong>¿Qué quieres hacer hoy?</strong>
-          <div class="visual-search">⌕ <span>Busca una herramienta...</span></div>
-          <div class="visual-chips">
-            <span>PDF</span><span>Imágenes</span><span>Word</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="floating-card floating-right">
-        <span class="file-icon turquoise">IMG</span>
-        <div><strong>Conversión</strong><small>En pocos segundos</small></div>
-      </div>
-    </div>
+    <span class="eyebrow">TU ESPACIO DIGITAL</span>
+    <h1>Más herramientas.<br><span>Más posibilidades.</span></h1>
+    <p>Convierte, comprime y transforma tus archivos desde un solo lugar. Fácil, rápido y sin complicaciones.</p>
+    <a href="#imagenes" class="primary-button">Explorar herramientas →</a>
+    <div class="hero-note">Herramientas gratuitas · Sin registro</div>
   </div>
 </section>
 
-<section class="tools-section section" id="herramientas">
+<section class="section" id="imagenes">
   <div class="container">
-
     <div class="section-heading">
-      <div>
-        <span class="eyebrow">UN MUNDO DE POSIBILIDADES</span>
-        <h2>¿Qué necesitas hacer?</h2>
-        <p>Encuentra la herramienta perfecta para tu tarea.</p>
-      </div>
-
-      <div class="search-box">
-        <span>⌕</span>
-        <input type="search" id="toolSearch" placeholder="Buscar herramienta...">
-      </div>
+      <span class="eyebrow">HERRAMIENTAS DE IMAGEN</span>
+      <h2>Trabaja tus imágenes</h2>
+      <p>Selecciona una herramienta y transforma tus fotografías.</p>
     </div>
 
-    <div class="category-grid" id="categoryGrid">
+    <div class="tool-layout">
+      <aside class="tool-menu">
+        <button class="tool-tab active" data-tool="convert">🔄 Convertir formato</button>
+        <button class="tool-tab" data-tool="compress">📦 Comprimir imagen</button>
+        <button class="tool-tab" data-tool="resize">📐 Redimensionar</button>
+      </aside>
 
-      <a class="category-card" href="#imagenes" data-search="imagenes imagen foto jpg png webp comprimir recortar redimensionar">
-        <span class="category-icon icon-purple">▧</span>
-        <h3>Imágenes</h3>
-        <p>Convierte, comprime y transforma tus imágenes.</p>
-        <span class="card-link">Explorar <b>→</b></span>
-      </a>
-
-      <a class="category-card" href="#documentos" data-search="pdf word documentos unir dividir comprimir convertir">
-        <span class="category-icon icon-blue">▤</span>
-        <h3>PDF y Word</h3>
-        <p>Convierte y organiza tus documentos.</p>
-        <span class="card-link">Explorar <b>→</b></span>
-      </a>
-
-      <a class="category-card" href="#audio" data-search="audio mp3 wav musica cortar sonido">
-        <span class="category-icon icon-orange">♫</span>
-        <h3>Audio</h3>
-        <p>Trabaja con tus archivos de sonido.</p>
-        <span class="card-link">Explorar <b>→</b></span>
-      </a>
-
-      <a class="category-card" href="#video" data-search="video mp4 convertir comprimir recortar">
-        <span class="category-icon icon-pink">▷</span>
-        <h3>Vídeo</h3>
-        <p>Transforma y edita tus archivos de vídeo.</p>
-        <span class="card-link">Explorar <b>→</b></span>
-      </a>
-
-    </div>
-  </div>
-</section>
-
-<section class="converter-section section" id="imagenes">
-  <div class="container">
-
-    <div class="center-heading">
-      <span class="eyebrow">CENTRO DE IMÁGENES</span>
-      <h2>Herramientas para tus imágenes</h2>
-      <p>Todo lo que necesitas para trabajar con fotografías.</p>
-    </div>
-
-    <div class="category-grid">
-
-      <a class="category-card" href="#convertidor">
-        <span class="category-icon icon-purple">⇄</span>
-        <h3>Convertir imágenes</h3>
-        <p>JPG, PNG y WEBP.</p>
-        <span class="card-link">Usar herramienta →</span>
-      </a>
-
-      <a class="category-card" href="#imagenes">
-        <span class="category-icon icon-blue">⇩</span>
-        <h3>Comprimir imágenes</h3>
-        <p>Reducir el peso de tus fotografías.</p>
-        <span class="card-link">Herramienta de imágenes</span>
-      </a>
-
-      <a class="category-card" href="#imagenes">
-        <span class="category-icon icon-orange">↗</span>
-        <h3>Redimensionar</h3>
-        <p>Cambiar el ancho y alto de una imagen.</p>
-        <span class="card-link">Herramienta de imágenes</span>
-      </a>
-
-      <a class="category-card" href="#imagenes">
-        <span class="category-icon icon-pink">▣</span>
-        <h3>Recortar imágenes</h3>
-        <p>Seleccionar el área que necesitas.</p>
-        <span class="card-link">Herramienta de imágenes</span>
-      </a>
-
-    </div>
-  </div>
-</section>
-
-<section class="converter-section section" id="convertidor">
-  <div class="container converter-layout">
-
-    <div class="converter-copy">
-      <span class="eyebrow">CONVERSOR DE IMÁGENES</span>
-      <h2>Tu imagen,<br><span>en el formato que quieras.</span></h2>
-
-      <p>
-        Transforma tus imágenes JPG, PNG y WEBP sin instalar programas.
-        Sube tu archivo, elige el formato y descarga el resultado.
-      </p>
-
-      <ul class="benefits">
-        <li>✓ Conversión rápida y sencilla</li>
-        <li>✓ Compatible con móvil y computador</li>
-        <li>✓ Procesamiento temporal de archivos</li>
-      </ul>
-    </div>
-
-    <div class="converter-card">
-      <div class="converter-top">
-        <div>
-          <span class="mini-label">HERRAMIENTA GRATUITA</span>
+      <div class="tool-panel">
+        <div class="tool-content active" id="panel-convert">
           <h3>Convertir imagen</h3>
+          <p>Transforma JPG, PNG o WEBP a otro formato.</p>
+          <form id="convertForm" data-endpoint="/api/convert/image">
+            <label class="upload-area" for="convertFile">
+              <span class="upload-icon">☁️</span>
+              <strong>Selecciona tu imagen</strong>
+              <span>JPG, PNG o WEBP · Máximo 15 MB</span>
+            </label>
+            <input type="file" id="convertFile" name="file" accept="image/jpeg,image/png,image/webp" required>
+            <p class="file-name" id="convertFileName">Ningún archivo seleccionado</p>
+            <label for="convertFormat">Formato de salida</label>
+            <select id="convertFormat" name="format">
+              <option value="jpg">JPG</option>
+              <option value="png">PNG</option>
+              <option value="webp">WEBP</option>
+            </select>
+            <button class="primary-button action-button" type="submit">Convertir imagen</button>
+            <p class="form-message" id="convertMessage" aria-live="polite"></p>
+          </form>
         </div>
-        <span class="sparkle">✦</span>
-      </div>
 
-      <form id="convertForm">
+        <div class="tool-content" id="panel-compress">
+          <h3>Comprimir imagen</h3>
+          <p>Reduce el peso de tus imágenes para compartirlas o subirlas a internet.</p>
+          <form id="compressForm" data-endpoint="/api/compress/image">
+            <label class="upload-area" for="compressFile">
+              <span class="upload-icon">📦</span>
+              <strong>Selecciona tu imagen</strong>
+              <span>JPG, PNG o WEBP · Máximo 15 MB</span>
+            </label>
+            <input type="file" id="compressFile" name="file" accept="image/jpeg,image/png,image/webp" required>
+            <p class="file-name" id="compressFileName">Ningún archivo seleccionado</p>
+            <label for="quality">Calidad de compresión</label>
+            <select id="quality" name="quality">
+              <option value="90">Alta calidad</option>
+              <option value="70" selected>Equilibrada</option>
+              <option value="45">Mayor compresión</option>
+            </select>
+            <button class="primary-button action-button" type="submit">Comprimir imagen</button>
+            <p class="form-message" id="compressMessage" aria-live="polite"></p>
+          </form>
+        </div>
 
-        <label class="upload-area" id="uploadArea" for="fileInput">
-          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp">
-          <span class="upload-icon">↑</span>
-          <strong>Arrastra tu imagen aquí</strong>
-          <span class="upload-subtitle">o <u>selecciona un archivo</u></span>
-          <small>JPG, PNG o WEBP · Máximo 15 MB</small>
-        </label>
-
-        <div class="file-selected" id="fileSelected"></div>
-
-        <label class="format-label" for="formatSelect">Convertir a</label>
-
-        <select id="formatSelect">
-          <option value="jpg">JPG — Imagen comprimida</option>
-          <option value="png">PNG — Alta calidad</option>
-          <option value="webp">WEBP — Formato moderno</option>
-        </select>
-
-        <button class="convert-button" type="submit" id="convertButton">
-          Convertir imagen <span>→</span>
-        </button>
-
-        <p class="form-message" id="formMessage" role="status"></p>
-      </form>
-
-      <div class="privacy-note">
-        <span>♧</span>
-        Tus archivos se procesan temporalmente para realizar la conversión.
+        <div class="tool-content" id="panel-resize">
+          <h3>Redimensionar imagen</h3>
+          <p>Ajusta las dimensiones de tus imágenes en píxeles.</p>
+          <form id="resizeForm" data-endpoint="/api/resize/image">
+            <label class="upload-area" for="resizeFile">
+              <span class="upload-icon">📐</span>
+              <strong>Selecciona tu imagen</strong>
+              <span>JPG, PNG o WEBP · Máximo 15 MB</span>
+            </label>
+            <input type="file" id="resizeFile" name="file" accept="image/jpeg,image/png,image/webp" required>
+            <p class="file-name" id="resizeFileName">Ningún archivo seleccionado</p>
+            <div class="dimensions">
+              <div>
+                <label for="width">Ancho (px)</label>
+                <input type="number" id="width" name="width" min="1" max="5000" value="1200" required>
+              </div>
+              <div>
+                <label for="height">Alto (px)</label>
+                <input type="number" id="height" name="height" min="1" max="5000" value="800" required>
+              </div>
+            </div>
+            <button class="primary-button action-button" type="submit">Redimensionar imagen</button>
+            <p class="form-message" id="resizeMessage" aria-live="polite"></p>
+          </form>
+        </div>
       </div>
     </div>
-
   </div>
 </section>
 
-<section class="tools-section section" id="documentos">
+<section class="section categories" id="herramientas">
   <div class="container">
-
-    <div class="center-heading">
-      <span class="eyebrow">CENTRO DE DOCUMENTOS</span>
-      <h2>PDF y Word</h2>
-      <p>Organiza, convierte y trabaja con tus documentos.</p>
+    <div class="section-heading">
+      <span class="eyebrow">MÁS POSIBILIDADES</span>
+      <h2>Un espacio para tus archivos</h2>
+      <p>Seguiremos incorporando nuevas herramientas a ÑAPPIX.</p>
     </div>
-
     <div class="category-grid">
-
-      <a class="category-card" href="#documentos">
-        <span class="category-icon icon-blue">PDF</span>
-        <h3>PDF a Word</h3>
-        <p>Transformar documentos PDF a DOCX.</p>
-        <span class="card-link">Conversión de documentos</span>
-      </a>
-
-      <a class="category-card" href="#documentos">
-        <span class="category-icon icon-purple">DOC</span>
-        <h3>Word a PDF</h3>
-        <p>Convertir documentos DOCX a PDF.</p>
-        <span class="card-link">Conversión de documentos</span>
-      </a>
-
-      <a class="category-card" href="#documentos">
-        <span class="category-icon icon-orange">＋</span>
-        <h3>Unir PDF</h3>
-        <p>Combinar varios documentos en uno.</p>
-        <span class="card-link">Herramienta PDF</span>
-      </a>
-
-      <a class="category-card" href="#documentos">
-        <span class="category-icon icon-pink">✂</span>
-        <h3>Dividir PDF</h3>
-        <p>Extraer las páginas que necesitas.</p>
-        <span class="card-link">Herramienta PDF</span>
-      </a>
-
-      <a class="category-card" href="#documentos">
-        <span class="category-icon icon-blue">⇩</span>
-        <h3>Comprimir PDF</h3>
-        <p>Reducir el tamaño de tus documentos.</p>
-        <span class="card-link">Herramienta PDF</span>
-      </a>
-
-      <a class="category-card" href="#documentos">
-        <span class="category-icon icon-purple">▧</span>
-        <h3>PDF a imágenes</h3>
-        <p>Convertir páginas PDF en imágenes.</p>
-        <span class="card-link">Herramienta PDF</span>
-      </a>
-
-      <a class="category-card" href="#documentos">
-        <span class="category-icon icon-orange">▤</span>
-        <h3>Imágenes a PDF</h3>
-        <p>Crear documentos PDF con fotografías.</p>
-        <span class="card-link">Herramienta PDF</span>
-      </a>
-
+      <article class="category-card">
+        <div class="category-icon">🖼️</div>
+        <h3>Imágenes</h3>
+        <p>Convierte, comprime y redimensiona imágenes.</p>
+        <a href="#imagenes">Explorar herramientas →</a>
+      </article>
+      <article class="category-card">
+        <div class="category-icon">📄</div>
+        <h3>PDF y Word</h3>
+        <p>Próximamente: herramientas para documentos.</p>
+      </article>
+      <article class="category-card">
+        <div class="category-icon">🎵</div>
+        <h3>Audio</h3>
+        <p>Próximamente: herramientas para archivos de audio.</p>
+      </article>
+      <article class="category-card">
+        <div class="category-icon">🎬</div>
+        <h3>Vídeo</h3>
+        <p>Próximamente: herramientas para archivos de vídeo.</p>
+      </article>
     </div>
   </div>
 </section>
 
-<section class="tools-section section" id="audio">
-  <div class="container">
-    <div class="center-heading">
-      <span class="eyebrow">CENTRO DE AUDIO</span>
-      <h2>Herramientas de audio</h2>
-      <p>Opciones para trabajar con tus archivos de sonido.</p>
-    </div>
-
-    <div class="category-grid">
-      <a class="category-card" href="#audio">
-        <span class="category-icon icon-orange">♫</span>
-        <h3>Cortar audio</h3>
-        <p>Seleccionar un fragmento de sonido.</p>
-        <span class="card-link">Herramienta de audio</span>
-      </a>
-
-      <a class="category-card" href="#audio">
-        <span class="category-icon icon-purple">⇄</span>
-        <h3>Convertir audio</h3>
-        <p>Transformar formatos compatibles.</p>
-        <span class="card-link">Herramienta de audio</span>
-      </a>
-
-      <a class="category-card" href="#audio">
-        <span class="category-icon icon-blue">♫</span>
-        <h3>Ajustar volumen</h3>
-        <p>Modificar el nivel de sonido.</p>
-        <span class="card-link">Herramienta de audio</span>
-      </a>
-    </div>
+<section class="section about" id="nosotros">
+  <div class="container about-content">
+    <span class="eyebrow">CONOCE ÑAPPIX</span>
+    <h2>La tecnología debe ser sencilla.</h2>
+    <p>ÑAPPIX es una plataforma de herramientas digitales pensada para facilitar las tareas cotidianas con tus archivos, desde cualquier dispositivo.</p>
   </div>
 </section>
-
-<section class="tools-section section" id="video">
-  <div class="container">
-    <div class="center-heading">
-      <span class="eyebrow">CENTRO DE VÍDEO</span>
-      <h2>Herramientas de vídeo</h2>
-      <p>Soluciones para tus archivos audiovisuales.</p>
-    </div>
-
-    <div class="category-grid">
-      <a class="category-card" href="#video">
-        <span class="category-icon icon-pink">▷</span>
-        <h3>Recortar vídeo</h3>
-        <p>Seleccionar el fragmento que necesitas.</p>
-        <span class="card-link">Herramienta de vídeo</span>
-      </a>
-
-      <a class="category-card" href="#video">
-        <span class="category-icon icon-purple">♫</span>
-        <h3>Extraer audio</h3>
-        <p>Obtener el sonido de un vídeo.</p>
-        <span class="card-link">Herramienta de vídeo</span>
-      </a>
-
-      <a class="category-card" href="#video">
-        <span class="category-icon icon-blue">⇄</span>
-        <h3>Convertir vídeo</h3>
-        <p>Transformar formatos compatibles.</p>
-        <span class="card-link">Herramienta de vídeo</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="steps-section section" id="como-funciona">
-  <div class="container">
-    <div class="center-heading">
-      <span class="eyebrow">ASÍ DE FÁCIL</span>
-      <h2>Tres pasos. Y listo.</h2>
-      <p>Olvídate de procesos complicados.</p>
-    </div>
-
-    <div class="steps-grid">
-      <div class="step">
-        <span class="step-number">01</span>
-        <div class="step-icon">↑</div>
-        <h3>Sube tu archivo</h3>
-        <p>Selecciona desde tu dispositivo el archivo que quieres transformar.</p>
-      </div>
-
-      <div class="step">
-        <span class="step-number">02</span>
-        <div class="step-icon">✦</div>
-        <h3>Elige tu herramienta</h3>
-        <p>Selecciona la operación que necesitas realizar.</p>
-      </div>
-
-      <div class="step">
-        <span class="step-number">03</span>
-        <div class="step-icon">↓</div>
-        <h3>Descarga tu archivo</h3>
-        <p>Obtén el resultado en tu dispositivo.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="cta-section" id="nosotros">
-  <div class="container cta-content">
-    <div>
-      <span class="eyebrow">ÑAPPIX · MÁS POSIBILIDADES</span>
-      <h2>Menos complicaciones.<br><span>Más soluciones.</span></h2>
-      <p>Un espacio digital creado para hacerte la vida más fácil.</p>
-    </div>
-    <a href="#herramientas" class="primary-button">Explorar ÑAPPIX →</a>
-  </div>
-</section>
-
 </main>
 
 <footer class="footer">
-  <div class="container footer-content">
-    <a class="logo footer-logo" href="/">
-      <span class="logo-mark">Ñ</span><span>APPIX<span class="logo-dot">.</span></span>
-    </a>
+  <div class="container">
+    <a href="#" class="logo">ÑAPPIX<span>.</span></a>
     <p>Más herramientas. Más posibilidades.</p>
-    <span>© <span id="year"></span> ÑAPPIX. Todos los derechos reservados.</span>
+    <small>© <span id="year"></span> ÑAPPIX. Todos los derechos reservados.</small>
   </div>
 </footer>
 
 <script src="/app.js"></script>
-
 </body>
 </html>
