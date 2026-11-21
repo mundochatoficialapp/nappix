@@ -1,6 +1,5 @@
 
 const express = require('express');
-const http = require('http');
 const path = require('path');
 const multer = require('multer');
 const sharp = require('sharp');
@@ -9,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const { PDFDocument } = require('pdf-lib');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.set('trust proxy', true);
 
@@ -38,9 +38,11 @@ const imageUpload = multer({
   },
   fileFilter: (req, file, cb) => {
     const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+
     if (!allowed.includes(file.mimetype)) {
-      return cb(new Error('Formato de imagen no permitido.'));
+      return cb(new Error('Formato no permitido. Usa JPG, PNG o WEBP.'));
     }
+
     cb(null, true);
   }
 });
@@ -55,16 +57,18 @@ const pdfUpload = multer({
     if (file.mimetype !== 'application/pdf') {
       return cb(new Error('Solo se permiten archivos PDF.'));
     }
+
     cb(null, true);
   }
 });
 
-function sendImage(res, buffer, filename, contentType) {
-  res.setHeader('Content-Type', contentType);
+function sendImage(res, buffer, mime, filename) {
+  res.setHeader('Content-Type', mime);
   res.setHeader(
     'Content-Disposition',
     `attachment; filename="${filename}"`
   );
+  res.setHeader('Cache-Control', 'no-store');
   res.send(buffer);
 }
 
@@ -74,15 +78,28 @@ function sendPdf(res, buffer, filename) {
     'Content-Disposition',
     `attachment; filename="${filename}"`
   );
+  res.setHeader('Cache-Control', 'no-store');
   res.send(Buffer.from(buffer));
 }
 
-// Estado del servidor
+function createImage(buffer) {
+  return sharp(buffer, {
+    limitInputPixels: 40000000
+  }).rotate();
+}
+
+// ESTADO DEL SERVIDOR
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     app: 'ÑAPPIX',
-    tools: ['convert', 'compress', 'resize', 'merge-pdf', 'split-pdf']
+    tools: [
+      'convert-image',
+      'compress-image',
+      'resize-image',
+      'merge-pdf',
+      'split-pdf'
+    ]
   });
 });
 
@@ -94,24 +111,25 @@ app.post('/api/convert/image', imageUpload.single('file'), async (req, res, next
     }
 
     const format = String(req.body.format || 'png').toLowerCase();
-    const formats = ['png', 'jpeg', 'webp'];
 
-    if (!formats.includes(format)) {
-      return res.status(400).json({ error: 'Formato no válido.' });
+    const formats = {
+      jpg: { format: 'jpeg', mime: 'image/jpeg', ext: 'jpg' },
+      jpeg: { format: 'jpeg', mime: 'image/jpeg', ext: 'jpg' },
+      png: { format: 'png', mime: 'image/png', ext: 'png' },
+      webp: { format: 'webp', mime: 'image/webp', ext: 'webp' }
+    };
+
+    const selected = formats[format];
+
+    if (!selected) {
+      return res.status(400).json({ error: 'Formato de salida no válido.' });
     }
 
-    const output = await sharp(req.file.buffer)
-      .toFormat(format)
+    const output = await createImage(req.file.buffer)
+      .toFormat(selected.format)
       .toBuffer();
 
-    const extension = format === 'jpeg' ? 'jpg' : format;
-
-    sendImage(
-      res,
-      output,
-      `nappix-convertida.${extension}`,
-      `image/${format}`
-    );
+    sendImage(res, output, selected.mime, `nappix-convertida.${selected.ext}`);
   } catch (error) {
     next(error);
   }
@@ -129,31 +147,45 @@ app.post('/api/compress/image', imageUpload.single('file'), async (req, res, nex
       Math.min(100, Number(req.body.quality) || 75)
     );
 
-    const metadata = await sharp(req.file.buffer).metadata();
-    let pipeline = sharp(req.file.buffer);
+    const image = createImage(req.file.buffer);
+    const metadata = await image.metadata();
+
+    let output;
+    let mime;
+    let extension;
 
     if (metadata.format === 'jpeg') {
-      pipeline = pipeline.jpeg({ quality, mozjpeg: true });
+      output = await image.jpeg({
+        quality,
+        mozjpeg: true
+      }).toBuffer();
+
+      mime = 'image/jpeg';
+      extension = 'jpg';
+
     } else if (metadata.format === 'png') {
-      pipeline = pipeline.png({ compressionLevel: 9, palette: true });
+      output = await image.png({
+        compressionLevel: 9,
+        palette: true
+      }).toBuffer();
+
+      mime = 'image/png';
+      extension = 'png';
+
     } else {
-      pipeline = pipeline.webp({ quality });
+      output = await image.webp({ quality }).toBuffer();
+
+      mime = 'image/webp';
+      extension = 'webp';
     }
 
-    const output = await pipeline.toBuffer();
-
-    sendImage(
-      res,
-      output,
-      `nappix-comprimida.${metadata.format === 'jpeg' ? 'jpg' : metadata.format}`,
-      `image/${metadata.format}`
-    );
+    sendImage(res, output, mime, `nappix-comprimida.${extension}`);
   } catch (error) {
     next(error);
   }
 });
 
-// CAMBIAR TAMAÑO
+// CAMBIAR TAMAÑO DE IMÁGENES
 app.post('/api/resize/image', imageUpload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
@@ -176,30 +208,37 @@ app.post('/api/resize/image', imageUpload.single('file'), async (req, res, next)
       });
     }
 
-    const output = await sharp(req.file.buffer)
-      .resize({
-        width,
-        height,
-        fit: 'inside',
-        withoutEnlargement: true
-      })
-      .toBuffer();
+    const image = createImage(req.file.buffer);
+
+    const output = await image.resize({
+      width,
+      height,
+      fit: 'inside',
+      withoutEnlargement: true
+    }).toBuffer();
 
     const metadata = await sharp(output).metadata();
-    const format = metadata.format || 'jpeg';
+
+    const formats = {
+      jpeg: { mime: 'image/jpeg', ext: 'jpg' },
+      png: { mime: 'image/png', ext: 'png' },
+      webp: { mime: 'image/webp', ext: 'webp' }
+    };
+
+    const selected = formats[metadata.format] || formats.jpeg;
 
     sendImage(
       res,
       output,
-      `nappix-redimensionada.${format === 'jpeg' ? 'jpg' : format}`,
-      `image/${format}`
+      selected.mime,
+      `nappix-redimensionada.${selected.ext}`
     );
   } catch (error) {
     next(error);
   }
 });
 
-// UNIR PDF
+// UNIR ARCHIVOS PDF
 app.post('/api/pdf/merge', pdfUpload.array('files', 10), async (req, res, next) => {
   try {
     const files = req.files || [];
@@ -214,6 +253,7 @@ app.post('/api/pdf/merge', pdfUpload.array('files', 10), async (req, res, next) 
 
     for (const file of files) {
       const sourcePdf = await PDFDocument.load(file.buffer);
+
       const pages = await mergedPdf.copyPages(
         sourcePdf,
         sourcePdf.getPageIndices()
@@ -230,7 +270,7 @@ app.post('/api/pdf/merge', pdfUpload.array('files', 10), async (req, res, next) 
   }
 });
 
-// DIVIDIR PDF
+// DIVIDIR ARCHIVOS PDF
 app.post('/api/pdf/split', pdfUpload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
@@ -276,16 +316,25 @@ app.post('/api/pdf/split', pdfUpload.single('file'), async (req, res, next) => {
   }
 });
 
-// Archivos públicos
+// ARCHIVOS PÚBLICOS
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('*', (req, res) => {
+// PÁGINA PRINCIPAL
+app.use((req, res, next) => {
+  if (req.method !== 'GET') {
+    return next();
+  }
+
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Manejo de errores
+// MANEJO DE ERRORES
 app.use((error, req, res, next) => {
-  console.error(error);
+  console.error('Error en ÑAPPIX:', error);
+
+  if (res.headersSent) {
+    return next(error);
+  }
 
   if (error instanceof multer.MulterError) {
     return res.status(400).json({
@@ -300,8 +349,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
+// INICIAR SERVIDOR
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`ÑAPPIX funcionando en el puerto ${PORT}`);
 });
