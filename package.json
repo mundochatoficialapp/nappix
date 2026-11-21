@@ -1,0 +1,21 @@
+
+{
+  "name": "nappix",
+  "version": "1.0.0",
+  "description": "Plataforma multifuncional de herramientas digitales",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "sharp": "^0.34.3",
+    "helmet": "^8.1.0",
+    "express-rate-limit": "^8.1.0"
+  }
+}
