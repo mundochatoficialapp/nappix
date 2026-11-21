@@ -6,6 +6,8 @@ const sharp = require('sharp');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { PDFDocument } = require('pdf-lib');
+const pdfParse = require('pdf-parse');
+const { Document, Packer, Paragraph } = require('docx');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -98,7 +100,8 @@ app.get('/api/health', (req, res) => {
       'compress-image',
       'resize-image',
       'merge-pdf',
-      'split-pdf'
+      'split-pdf',
+      'pdf-to-word'
     ]
   });
 });
@@ -311,6 +314,67 @@ app.post('/api/pdf/split', pdfUpload.single('file'), async (req, res, next) => {
     const output = await newPdf.save();
 
     sendPdf(res, output, 'nappix-pdf-dividido.pdf');
+  } catch (error) {
+    next(error);
+  }
+});
+
+// CONVERTIR PDF A WORD
+app.post('/api/pdf/to-word', pdfUpload.single('file'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'Selecciona un archivo PDF.'
+      });
+    }
+
+    // Extraer texto del PDF
+    const parsed = await pdfParse(req.file.buffer);
+
+    const extractedText = String(parsed.text || '').trim();
+
+    if (!extractedText) {
+      return res.status(400).json({
+        error: 'No encontramos texto en este PDF. Si es un documento escaneado, necesitará OCR.'
+      });
+    }
+
+    // Organizar el texto en párrafos de Word
+    const paragraphs = extractedText
+      .replace(/\r/g, '')
+      .split(/\n+/)
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => new Paragraph({
+        children: [{
+          text: line
+        }]
+      }));
+
+    const document = new Document({
+      sections: [{
+        properties: {},
+        children: paragraphs
+      }]
+    });
+
+    // Crear documento DOCX
+    const output = await Packer.toBuffer(document);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    );
+
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="nappix-convertido.docx"'
+    );
+
+    res.setHeader('Cache-Control', 'no-store');
+
+    res.send(output);
+
   } catch (error) {
     next(error);
   }
