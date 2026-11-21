@@ -1,4 +1,9 @@
 
+// ==========================================
+// ÑAPPIX - FUNCIONES PRINCIPALES
+// ==========================================
+
+// Elementos del conversor
 const fileInput = document.getElementById('fileInput');
 const uploadArea = document.getElementById('uploadArea');
 const fileSelected = document.getElementById('fileSelected');
@@ -9,44 +14,63 @@ const formatSelect = document.getElementById('formatSelect');
 
 let selectedFile = null;
 
-document.getElementById('year').textContent = new Date().getFullYear();
+// Año automático
+const yearElement = document.getElementById('year');
 
-// Menú para celulares
+if (yearElement) {
+  yearElement.textContent = new Date().getFullYear();
+}
+
+// ==========================================
+// MENÚ PARA CELULARES
+// ==========================================
+
 const menuToggle = document.getElementById('menuToggle');
 const mobileMenu = document.getElementById('mobileMenu');
 
-menuToggle.addEventListener('click', () => {
-  mobileMenu.classList.toggle('open');
-});
-
-mobileMenu.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    mobileMenu.classList.remove('open');
+if (menuToggle && mobileMenu) {
+  menuToggle.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+    menuToggle.setAttribute(
+      'aria-label',
+      isOpen ? 'Cerrar menú' : 'Abrir menú'
+    );
   });
-});
 
-// Buscador de herramientas
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', 'Abrir menú');
+    });
+  });
+}
+
+// ==========================================
+// BUSCADOR DE HERRAMIENTAS
+// ==========================================
+
 const toolSearch = document.getElementById('toolSearch');
 const categoryCards = document.querySelectorAll('.category-card');
 
-toolSearch.addEventListener('input', () => {
-  const search = toolSearch.value.trim().toLowerCase();
+if (toolSearch) {
+  toolSearch.addEventListener('input', () => {
+    const search = toolSearch.value.trim().toLowerCase();
 
-  categoryCards.forEach(card => {
-    const content = (
-      card.innerText + ' ' + (card.dataset.search || '')
-    ).toLowerCase();
+    categoryCards.forEach(card => {
+      const content = (
+        card.innerText + ' ' + (card.dataset.search || '')
+      ).toLowerCase();
 
-    card.style.display = content.includes(search) ? '' : 'none';
+      card.style.display = content.includes(search) ? '' : 'none';
+    });
   });
-});
+}
 
-// Seleccionar archivo
-fileInput.addEventListener('change', () => {
-  if (fileInput.files.length) {
-    selectFile(fileInput.files[0]);
-  }
-});
+// ==========================================
+// SELECCIÓN DE ARCHIVOS
+// ==========================================
 
 function selectFile(file) {
   const allowedTypes = [
@@ -56,117 +80,197 @@ function selectFile(file) {
   ];
 
   selectedFile = null;
-  fileInput.value = '';
+
+  if (!file) return;
 
   if (!allowedTypes.includes(file.type)) {
-    fileSelected.textContent = '';
-    formMessage.textContent = 'Selecciona una imagen JPG, PNG o WEBP.';
+    if (fileSelected) fileSelected.textContent = '';
+
+    if (formMessage) {
+      formMessage.textContent =
+        'Formato no permitido. Selecciona JPG, PNG o WEBP.';
+    }
+
     return;
   }
 
   if (file.size > 15 * 1024 * 1024) {
-    fileSelected.textContent = '';
-    formMessage.textContent = 'La imagen supera el límite de 15 MB.';
+    if (fileSelected) fileSelected.textContent = '';
+
+    if (formMessage) {
+      formMessage.textContent =
+        'La imagen supera el límite permitido de 15 MB.';
+    }
+
     return;
   }
 
   selectedFile = file;
-  fileSelected.textContent =
-    '✓ ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
 
-  formMessage.textContent = '';
+  if (fileSelected) {
+    fileSelected.textContent =
+      '✓ ' + file.name + ' (' +
+      (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+  }
+
+  if (formMessage) {
+    formMessage.textContent = '';
+  }
 }
 
-// Arrastrar y soltar
-uploadArea.addEventListener('dragover', event => {
-  event.preventDefault();
-  uploadArea.classList.add('dragover');
-});
+if (fileInput) {
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files && fileInput.files.length) {
+      selectFile(fileInput.files[0]);
+    }
+  });
+}
 
-uploadArea.addEventListener('dragleave', () => {
-  uploadArea.classList.remove('dragover');
-});
+// ==========================================
+// ARRASTRAR Y SOLTAR
+// ==========================================
 
-uploadArea.addEventListener('drop', event => {
-  event.preventDefault();
-  uploadArea.classList.remove('dragover');
+if (uploadArea) {
+  uploadArea.addEventListener('dragover', event => {
+    event.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
 
-  const file = event.dataTransfer.files[0];
+  uploadArea.addEventListener('dragleave', event => {
+    if (!uploadArea.contains(event.relatedTarget)) {
+      uploadArea.classList.remove('dragover');
+    }
+  });
 
-  if (file) {
-    selectFile(file);
-  }
-});
+  uploadArea.addEventListener('drop', event => {
+    event.preventDefault();
+    uploadArea.classList.remove('dragover');
 
-// Conversión de imágenes
-convertForm.addEventListener('submit', async event => {
-  event.preventDefault();
+    const file = event.dataTransfer.files[0];
 
-  if (!selectedFile) {
-    formMessage.textContent = 'Primero selecciona una imagen.';
-    return;
-  }
+    if (file) {
+      selectFile(file);
+    }
+  });
+}
 
-  const format = formatSelect.value;
+// ==========================================
+// CONVERSIÓN DE IMÁGENES
+// ==========================================
 
-  if (
-    format === 'jpg' &&
-    selectedFile.type === 'image/jpeg' ||
-    format === 'png' &&
-    selectedFile.type === 'image/png' ||
-    format === 'webp' &&
-    selectedFile.type === 'image/webp'
-  ) {
-    formMessage.textContent = 'La imagen ya está en ese formato.';
-    return;
-  }
+if (convertForm) {
+  convertForm.addEventListener('submit', async event => {
+    event.preventDefault();
 
-  const formData = new FormData();
-  formData.append('file', selectedFile);
-  formData.append('format', format);
-
-  convertButton.disabled = true;
-  convertButton.textContent = 'Convirtiendo...';
-  formMessage.textContent = 'Estamos preparando tu imagen.';
-
-  try {
-    const response = await fetch('/api/convert/image', {
-      method: 'POST',
-      body: formData
-    });
-
-    if (!response.ok) {
-      let errorMessage = 'No se pudo convertir la imagen.';
-
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.error || errorMessage;
-      } catch {}
-
-      throw new Error(errorMessage);
+    if (!selectedFile) {
+      formMessage.textContent =
+        'Primero selecciona una imagen.';
+      return;
     }
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
+    const format = formatSelect.value;
 
-    const extension = format === 'jpg' ? 'jpg' : format;
-    const originalName = selectedFile.name.replace(/\.[^/.]+$/, '');
-    const downloadName = originalName + '.' + extension;
+    const currentFormat = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp'
+    }[selectedFile.type];
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = downloadName;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    if (format === currentFormat) {
+      formMessage.textContent =
+        'La imagen ya está en ese formato.';
+      return;
+    }
 
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const formData = new FormData();
 
-    formMessage.textContent = '¡Conversión completada! Tu descarga está lista.';
+    formData.append('file', selectedFile);
+    formData.append('format', format);
+
+    convertButton.disabled = true;
+    convertButton.textContent = 'Convirtiendo...';
+
+    formMessage.textContent =
+      'Estamos preparando tu imagen.';
+
+    try {
+      const response = await fetch('/api/convert/image', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        let errorMessage =
+          'No se pudo convertir la imagen.';
+
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {}
+
+        throw new Error(errorMessage);
+      }
+
+      const blob = await response.blob();
+
+      const url = URL.createObjectURL(blob);
+
+      const originalName = selectedFile.name
+        .replace(/\.[^/.]+$/, '')
+        .replace(/[^a-zA-Z0-9_-]/g, '_');
+
+      const extension = format === 'jpg' ? 'jpg' : format;
+
+      const downloadName =
+        (originalName || 'imagen') + '.' + extension;
+
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = downloadName;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1500);
+
+      formMessage.textContent =
+        '¡Conversión completada! Tu descarga está lista.';
+
+    } catch (error) {
+      console.error('Error de conversión:', error);
+
+      formMessage.textContent =
+        error.message || 'Ocurrió un error al convertir la imagen.';
+
+    } finally {
+      convertButton.disabled = false;
+      convertButton.innerHTML =
+        'Convertir imagen <span>→</span>';
+    }
+  });
+}
+
+// ==========================================
+// ESTADO DEL SERVIDOR
+// ==========================================
+
+async function checkServer() {
+  try {
+    const response = await fetch('/api/health');
+
+    if (!response.ok) {
+      throw new Error('Servidor no disponible');
+    }
+
+    console.log('ÑAPPIX: servidor conectado correctamente.');
+
   } catch (error) {
-    formMessage.textContent = error.message;
-  } finally {
-    convertButton.disabled = false;
-    convertButton.innerHTML = 'Convertir imagen <span>→</span>';
+    console.warn('ÑAPPIX: no se pudo comprobar el servidor.');
   }
-});
+}
+
+checkServer();
