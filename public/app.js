@@ -1,110 +1,231 @@
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Año del footer
-  const year = document.getElementById('year');
-  if (year) year.textContent = new Date().getFullYear();
 
-  // Menú móvil
+  // AÑO DEL FOOTER
+  const year = document.getElementById('year');
+
+  if (year) {
+    year.textContent = new Date().getFullYear();
+  }
+
+  // MENÚ PARA CELULARES
   const menuToggle = document.getElementById('menuToggle');
   const mainNav = document.getElementById('mainNav');
 
-  menuToggle?.addEventListener('click', () => {
-    const opened = mainNav.classList.toggle('open');
-    menuToggle.setAttribute('aria-expanded', String(opened));
-    menuToggle.textContent = opened ? '✕' : '☰';
-  });
-
-  mainNav?.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      mainNav.classList.remove('open');
-      menuToggle?.setAttribute('aria-expanded', 'false');
-      if (menuToggle) menuToggle.textContent = '☰';
+  if (menuToggle && mainNav) {
+    menuToggle.addEventListener('click', () => {
+      mainNav.classList.toggle('open');
+      menuToggle.textContent = mainNav.classList.contains('open') ? '✕' : '☰';
     });
-  });
 
-  // Pestañas de herramientas
+    mainNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mainNav.classList.remove('open');
+        menuToggle.textContent = '☰';
+      });
+    });
+  }
+
+  // CAMBIAR ENTRE HERRAMIENTAS
   const tabs = document.querySelectorAll('.tool-tab');
   const panels = document.querySelectorAll('.tool-content');
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      const selected = tab.dataset.tool;
+      const selectedTool = tab.dataset.tool;
 
-      tabs.forEach(item => {
-        item.classList.toggle('active', item === tab);
-      });
+      tabs.forEach(item => item.classList.remove('active'));
+      panels.forEach(panel => panel.classList.remove('active'));
 
-      panels.forEach(panel => {
-        panel.classList.toggle('active', panel.id === `panel-${selected}`);
-      });
+      tab.classList.add('active');
+
+      const selectedPanel = document.getElementById(`panel-${selectedTool}`);
+
+      if (selectedPanel) {
+        selectedPanel.classList.add('active');
+      }
     });
   });
 
-  // Selección y validación de archivos
-  const allowedTypes = [
-    'image/jpeg',
-    'image/png',
-    'image/webp'
+  // FORMATO DE TAMAÑOS
+  function formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} bytes`;
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  // SELECCIÓN DE ARCHIVOS
+  const fileInputs = [
+    {
+      input: 'convertFile',
+      output: 'convertFileName',
+      type: 'image'
+    },
+    {
+      input: 'compressFile',
+      output: 'compressFileName',
+      type: 'image'
+    },
+    {
+      input: 'resizeFile',
+      output: 'resizeFileName',
+      type: 'image'
+    },
+    {
+      input: 'mergeFiles',
+      output: 'mergeFileName',
+      type: 'pdf',
+      multiple: true
+    },
+    {
+      input: 'splitFile',
+      output: 'splitFileName',
+      type: 'pdf'
+    }
   ];
 
-  const maxSize = 15 * 1024 * 1024;
+  fileInputs.forEach(config => {
+    const input = document.getElementById(config.input);
+    const output = document.getElementById(config.output);
 
-  ['convert', 'compress', 'resize'].forEach(type => {
-    const input = document.getElementById(`${type}File`);
-    const name = document.getElementById(`${type}FileName`);
-    const form = document.getElementById(`${type}Form`);
-    const message = document.getElementById(`${type}Message`);
-
-    if (!input || !form) return;
+    if (!input || !output) return;
 
     input.addEventListener('change', () => {
-      const file = input.files[0];
+      const files = Array.from(input.files || []);
 
-      if (!file) {
-        name.textContent = 'Ningún archivo seleccionado';
+      if (files.length === 0) {
+        output.textContent = 'Ningún archivo seleccionado';
         return;
       }
 
-      if (!allowedTypes.includes(file.type)) {
+      const maxSize = config.type === 'pdf'
+        ? 25 * 1024 * 1024
+        : 15 * 1024 * 1024;
+
+      const allowedType = config.type === 'pdf'
+        ? file => file.type === 'application/pdf'
+        : file => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
+
+      const invalidFile = files.find(file =>
+        !allowedType(file) || file.size > maxSize
+      );
+
+      if (invalidFile) {
+        alert(
+          `El archivo "${invalidFile.name}" no es válido o supera el límite permitido de ${config.type === 'pdf' ? '25 MB' : '15 MB'}.`
+        );
+
         input.value = '';
-        name.textContent = 'Ningún archivo seleccionado';
-        message.textContent = 'Formato no permitido. Usa JPG, PNG o WEBP.';
+        output.textContent = 'Ningún archivo seleccionado';
         return;
       }
 
-      if (file.size > maxSize) {
-        input.value = '';
-        name.textContent = 'Ningún archivo seleccionado';
-        message.textContent = 'El archivo supera el límite de 15 MB.';
-        return;
-      }
+      if (config.multiple) {
+        if (files.length < 2 || files.length > 10) {
+          alert('Selecciona entre 2 y 10 archivos PDF.');
+          input.value = '';
+          output.textContent = 'Ningún archivo seleccionado';
+          return;
+        }
 
-      name.textContent = `${file.name} (${formatBytes(file.size)})`;
-      message.textContent = '';
+        const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
+        output.textContent =
+          `${files.length} archivos seleccionados · ${formatBytes(totalSize)}`;
+      } else {
+        output.textContent =
+          `${files[0].name} · ${formatBytes(files[0].size)}`;
+      }
     });
+  });
 
-    // Procesamiento de cada herramienta
+  // DESCARGAR ARCHIVOS PROCESADOS
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = filename;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // OBTENER NOMBRE DEL ARCHIVO
+  function getFilename(response, fallback) {
+    const disposition = response.headers.get('Content-Disposition');
+
+    if (!disposition) return fallback;
+
+    const match = disposition.match(/filename="?([^";]+)"?/i);
+
+    return match ? match[1] : fallback;
+  }
+
+  // PROCESAR FORMULARIOS
+  const forms = [
+    {
+      id: 'convertForm',
+      message: 'convertMessage',
+      fallback: 'nappix-convertida.png',
+      success: '¡Imagen convertida correctamente!'
+    },
+    {
+      id: 'compressForm',
+      message: 'compressMessage',
+      fallback: 'nappix-comprimida.jpg',
+      success: '¡Imagen comprimida correctamente!'
+    },
+    {
+      id: 'resizeForm',
+      message: 'resizeMessage',
+      fallback: 'nappix-redimensionada.jpg',
+      success: '¡Imagen redimensionada correctamente!'
+    },
+    {
+      id: 'mergeForm',
+      message: 'mergeMessage',
+      fallback: 'nappix-pdf-unido.pdf',
+      success: '¡Tus archivos PDF se han unido correctamente!'
+    },
+    {
+      id: 'splitForm',
+      message: 'splitMessage',
+      fallback: 'nappix-pdf-dividido.pdf',
+      success: '¡Tu PDF se ha dividido correctamente!'
+    }
+  ];
+
+  forms.forEach(config => {
+    const form = document.getElementById(config.id);
+    const message = document.getElementById(config.message);
+
+    if (!form || !message) return;
+
     form.addEventListener('submit', async event => {
       event.preventDefault();
 
-      const file = input.files[0];
-
-      if (!file) {
-        message.textContent = 'Primero selecciona una imagen.';
-        return;
-      }
-
-      if (!allowedTypes.includes(file.type) || file.size > maxSize) {
-        message.textContent = 'Revisa el formato y el tamaño del archivo.';
-        return;
-      }
+      if (!form.reportValidity()) return;
 
       const button = form.querySelector('button[type="submit"]');
-      const originalText = button.textContent;
 
-      button.disabled = true;
-      button.textContent = 'Procesando...';
-      message.textContent = 'Estamos trabajando en tu imagen.';
+      const originalText = button
+        ? button.textContent
+        : 'Procesar';
+
+      message.textContent = 'Procesando tu archivo...';
+      message.className = 'form-message';
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Procesando...';
+      }
 
       try {
         const formData = new FormData(form);
@@ -115,12 +236,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (!response.ok) {
-          let errorMessage = 'No se pudo procesar la imagen.';
+          let errorMessage = 'No se pudo procesar el archivo.';
 
           try {
-            const data = await response.json();
-            if (data.error) errorMessage = data.error;
-          } catch (_) {}
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (_) {
+            // Conserva el mensaje predeterminado.
+          }
 
           throw new Error(errorMessage);
         }
@@ -128,41 +251,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const blob = await response.blob();
 
         if (!blob.size) {
-          throw new Error('El servidor devolvió un archivo vacío.');
+          throw new Error('El archivo generado está vacío.');
         }
 
-        const disposition = response.headers.get('Content-Disposition') || '';
-        const match = disposition.match(/filename="?([^";]+)"?/i);
+        const filename = getFilename(response, config.fallback);
 
-        let filename = match
-          ? match[1]
-          : `${type === 'convert' ? 'imagen-convertida' : type === 'compress' ? 'imagen-comprimida' : 'imagen-redimensionada'}`;
+        downloadBlob(blob, filename);
 
-        const downloadUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        message.textContent = config.success;
+        message.className = 'form-message success';
 
-        link.href = downloadUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
-
-        message.textContent = '¡Listo! Tu imagen se ha procesado y descargado.';
       } catch (error) {
-        message.textContent = error.message || 'Ocurrió un error inesperado.';
+        console.error(`Error en ${config.id}:`, error);
+
+        message.textContent =
+          error.message || 'Ocurrió un error al procesar el archivo.';
+
+        message.className = 'form-message error';
+
       } finally {
-        button.disabled = false;
-        button.textContent = originalText;
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
       }
     });
   });
 
-  // Formato de tamaños
-  function formatBytes(bytes) {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-  }
 });
