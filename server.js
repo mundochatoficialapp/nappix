@@ -612,13 +612,31 @@ app.post("/api/media/video-compress", mediaUpload.single("file"), async (req, re
 app.get("/", (req, res) => {
 res.send(`<!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <meta name="google-site-verification" content="e76-GL-WwZdNeNp3KjC-Q9IgxNVP_lvLdqhBBVgR1Pw">
+
 <meta name="theme-color" content="#6428d9">
-<meta name="description" content="ÑAPPIX: herramientas digitales gratuitas para convertir, comprimir y organizar archivos.">
-<title>ÑAPPIX - Herramientas digitales</title>
+
+<title>ÑAPPIX | Herramientas gratis para PDF, imágenes y archivos</title>
+
+<meta name="description" content="Convierte y comprime imágenes, edita PDF, crea códigos QR, organiza archivos ZIP y procesa audio y video gratis y online con ÑAPPIX.">
+
+<meta name="robots" content="index, follow">
+
+<link rel="canonical" href="https://xn--appix-nta.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:site_name" content="ÑAPPIX">
+<meta property="og:title" content="ÑAPPIX | Herramientas digitales gratis">
+<meta property="og:description" content="Convierte, comprime y organiza archivos gratis y online con ÑAPPIX.">
+<meta property="og:url" content="https://xn--appix-nta.com/">
+</head>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 :root{--purple:#7046e8;--dark:#4321a5;--turquoise:#23c9bb;--ink:#201b35;--muted:#77738a;--bg:#f7f6fb;--white:#fff;--border:#ebe8f4}
