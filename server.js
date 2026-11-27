@@ -28,11 +28,17 @@ const PORT = process.env.PORT || 3000;
 app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 
+
 // GOOGLE: ROBOTS Y SITEMAP
+const SITE_URL = "https://xn--appix-nta.com";
+
 app.get("/robots.txt", (req, res) => {
   res.set("Cache-Control", "no-store, no-cache, must-revalidate");
   res.type("text/plain").send(
-    "User-agent: *\nAllow: /\n\nSitemap: https://nappix.onrender.com/sitemap.xml"
+    `User-agent: *
+Allow: /
+
+Sitemap: ${SITE_URL}/sitemap.xml`
   );
 });
 
@@ -41,12 +47,11 @@ app.get("/sitemap.xml", (req, res) => {
   res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nappix.onrender.com/</loc>
+    <loc>${SITE_URL}/</loc>
   </url>
 </urlset>`);
 });
 
-app.use(express.json({ limit: "2mb" }));
 app.use(express.static(path.join(__dirname, "public"), { index: false }));
 
 app.use("/api", rateLimit({
