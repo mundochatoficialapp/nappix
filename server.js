@@ -636,9 +636,17 @@ res.send(`<!DOCTYPE html>
 <meta property="og:title" content="ÑAPPIX | Herramientas digitales gratis">
 <meta property="og:description" content="Convierte, comprime y organiza archivos gratis y online con ÑAPPIX.">
 <meta property="og:url" content="https://xn--appix-nta.com/">
-</head>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LFMVQP9L33"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-LFMVQP9L33');
+</script>
 
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 :root{--purple:#7046e8;--dark:#4321a5;--turquoise:#23c9bb;--ink:#201b35;--muted:#77738a;--bg:#f7f6fb;--white:#fff;--border:#ebe8f4}
 *{box-sizing:border-box}
