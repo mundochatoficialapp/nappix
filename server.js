@@ -49,6 +49,9 @@ app.get("/sitemap.xml", (req, res) => {
   <url>
     <loc>${SITE_URL}/</loc>
   </url>
+  <url>
+    <loc>${SITE_URL}/unir-pdf</loc>
+  </url>
 </urlset>`);
 });
 
