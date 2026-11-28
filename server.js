@@ -624,7 +624,7 @@ res.send(`<!DOCTYPE html>
 
 <title>ÑAPPIX | Herramientas gratis para PDF, imágenes y archivos</title>
 
-<meta name="description" content="Convierte y comprime imágenes, edita PDF, crea códigos QR, organiza archivos ZIP y procesa audio y video gratis y online con ÑAPPIX.">
+<meta name="description" content="Convierte y comprime imágenes, edita PDF, crea códigos QR y organiza archivos ZIP, audio y video gratis y online con ÑAPPIX.">
 
 <meta name="robots" content="index, follow">
 
