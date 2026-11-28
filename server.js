@@ -609,6 +609,107 @@ app.post("/api/media/video-compress", mediaUpload.single("file"), async (req, re
 // PÁGINA PRINCIPAL
 // ==========================================
 
+// ==========================================
+// PÁGINA SEO: UNIR PDF
+// ==========================================
+
+app.get("/unir-pdf", (req, res) => {
+  res.send(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Unir PDF gratis online | ÑAPPIX</title>
+
+  <meta name="description" content="Une varios archivos PDF en un solo documento gratis y online con ÑAPPIX. Fácil, rápido y sin instalar programas.">
+
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://xn--appix-nta.com/unir-pdf">
+
+  <meta property="og:title" content="Unir PDF gratis online | ÑAPPIX">
+  <meta property="og:description" content="Combina varios archivos PDF en un solo documento de forma fácil y gratuita.">
+  <meta property="og:url" content="https://xn--appix-nta.com/unir-pdf">
+  <meta property="og:type" content="website">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 30px 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      color: #20243a;
+      line-height: 1.7;
+    }
+    main {
+      max-width: 850px;
+      margin: 40px auto;
+      padding: 35px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.06);
+    }
+    h1, h2 {
+      color: #20243a;
+    }
+    .boton {
+      display: inline-block;
+      margin: 20px 0;
+      padding: 14px 25px;
+      background: #6254e8;
+      color: white;
+      text-decoration: none;
+      border-radius: 9px;
+      font-weight: bold;
+    }
+    .boton:hover {
+      background: #493bd0;
+    }
+    a {
+      color: #6254e8;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Unir archivos PDF gratis online</h1>
+
+    <p>Con ÑAPPIX puedes combinar varios archivos PDF en un solo documento de manera sencilla, rápida y gratuita. No necesitas instalar programas ni complicarte con procesos difíciles.</p>
+
+    <h2>¿Cómo unir varios PDF?</h2>
+    <p>Selecciona los archivos PDF que deseas combinar, cárgalos en nuestra herramienta y utiliza la opción para unirlos. Obtendrás un solo documento con tus archivos organizados.</p>
+
+    <h2>¿Por qué utilizar ÑAPPIX?</h2>
+    <ul>
+      <li>Herramienta gratuita y online.</li>
+      <li>Proceso sencillo y fácil de utilizar.</li>
+      <li>No necesitas instalar programas.</li>
+      <li>Acceso desde tu computador o celular.</li>
+    </ul>
+
+    <h2>Preguntas frecuentes</h2>
+
+    <h3>¿Puedo unir varios archivos PDF gratis?</h3>
+    <p>Sí. ÑAPPIX ofrece una herramienta para combinar documentos PDF sin costo.</p>
+
+    <h3>¿Necesito instalar algún programa?</h3>
+    <p>No. Puedes utilizar la herramienta directamente desde tu navegador.</p>
+
+    <h3>¿Cómo puedo comenzar?</h3>
+    <p>Entra a la herramienta, selecciona tus documentos PDF y comienza a unirlos.</p>
+
+    <a class="boton" href="/#unir-pdf">UNIR MIS ARCHIVOS PDF</a>
+
+    <p><a href="/">Volver a ÑAPPIX</a></p>
+  </main>
+</body>
+</html>`);
+});
+
+// ==========================================
+// PÁGINA PRINCIPAL
+// ==========================================
+
 app.get("/", (req, res) => {
 res.send(`<!DOCTYPE html>
 <html lang="es">
