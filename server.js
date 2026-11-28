@@ -1112,6 +1112,11 @@ form.addEventListener("submit", async event => {
     button.textContent = "Procesar archivo";
   }
 });
+// Abrir directamente la herramienta Unir PDF
+if (window.location.hash === "#unir-pdf") {
+  openTool("pdf-merge");
+}
+
 </script>
 </body>
 </html>`);
